@@ -54,7 +54,7 @@ final class WebRTCClientTests: XCTestCase {
         try await client.set(remoteDescription: dummySdp)
 
         // Wait for connection
-        try await Task.sleep(nanoseconds: 350_000_000)
+        try await Task.sleep(nanoseconds: 30_000_000)
         XCTAssertEqual(client.peerConnectionState, .connected)
 
         let expectation = expectation(description: "Expected remote echo message")

@@ -70,7 +70,7 @@ public final class SimulatedWebRTCClient: WebRTCClientProtocol, @unchecked Senda
 
         // Gather simulated local candidate
         Task { [weak self] in
-            try? await Task.sleep(nanoseconds: 100_000_000)
+            try? await Task.sleep(nanoseconds: 10_000_000)
             let candidate = IceCandidate(
                 sdp: "candidate:109283 1 udp 2113937151 192.168.1.150 50001 typ host",
                 sdpMLineIndex: 0,
@@ -105,7 +105,7 @@ public final class SimulatedWebRTCClient: WebRTCClientProtocol, @unchecked Senda
 
         // Gather simulated local candidate
         Task { [weak self] in
-            try? await Task.sleep(nanoseconds: 100_000_000)
+            try? await Task.sleep(nanoseconds: 10_000_000)
             let candidate = IceCandidate(
                 sdp: "candidate:551239 1 udp 2113937151 192.168.1.150 50002 typ host",
                 sdpMLineIndex: 0,
@@ -122,7 +122,7 @@ public final class SimulatedWebRTCClient: WebRTCClientProtocol, @unchecked Senda
         updateIceState(.checking)
 
         // Handshake settles
-        try? await Task.sleep(nanoseconds: 50_000_000)
+        try? await Task.sleep(nanoseconds: 10_000_000)
 
         updatePeerState(.connected)
         updateIceState(.connected)
@@ -169,7 +169,7 @@ public final class SimulatedWebRTCClient: WebRTCClientProtocol, @unchecked Senda
 
         // Simulate remote peer echoing or answering on DataChannel
         Task { [weak self] in
-            try? await Task.sleep(nanoseconds: 800_000_000)
+            try? await Task.sleep(nanoseconds: 30_000_000)
             let remoteMessage = ChatMessage(
                 senderId: "Peer-Remote",
                 text: "Echo via WebRTC DataChannel: \"\(text)\"",

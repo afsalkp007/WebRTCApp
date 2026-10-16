@@ -54,7 +54,7 @@ final class CallIntegrationTests: XCTestCase {
         try await repository.startCall(asInitiator: true, roomId: "integration-room")
 
         // Wait for loopback response and connection
-        try await Task.sleep(nanoseconds: 150_000_000)
+        try await Task.sleep(nanoseconds: 50_000_000)
 
         XCTAssertEqual(repository.webRTC.peerConnectionState, .connected)
         XCTAssertEqual(repository.webRTC.iceConnectionState, .connected)

@@ -113,7 +113,7 @@ public final class CallViewModel {
             iceConnectionState = .closed
             isDataChannelOpen = false
 
-            try? await Task.sleep(nanoseconds: 500_000_000)
+            try? await Task.sleep(nanoseconds: 10_000_000)
             callState = .idle
         }
     }

@@ -84,11 +84,11 @@ final class CallViewModelTests: XCTestCase {
         viewModel.startCall(asInitiator: true)
         XCTAssertTrue(viewModel.callState.isCallActive)
 
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        try? await Task.sleep(nanoseconds: 20_000_000)
         XCTAssertTrue(viewModel.callState.isCallActive)
 
         viewModel.endCall()
-        try? await Task.sleep(nanoseconds: 600_000_000)
+        try? await Task.sleep(nanoseconds: 30_000_000)
         XCTAssertEqual(viewModel.callState, .idle)
     }
 

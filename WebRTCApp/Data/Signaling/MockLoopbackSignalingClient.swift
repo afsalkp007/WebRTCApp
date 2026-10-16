@@ -16,7 +16,7 @@ public final class MockLoopbackSignalingClient: SignalingClientProtocol, @unchec
     public let messageStream: AsyncStream<SignalingMessage>
 
     public var autoRespondToOffer: Bool = true
-    public var responseDelayNanoseconds: UInt64 = 400_000_000 // 400ms
+    public var responseDelayNanoseconds: UInt64 = 20_000_000 // 20ms
 
     public init(autoRespondToOffer: Bool = true) {
         self.autoRespondToOffer = autoRespondToOffer
@@ -41,7 +41,7 @@ public final class MockLoopbackSignalingClient: SignalingClientProtocol, @unchec
 
     public func connect() async throws {
         updateState(.connecting)
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        try? await Task.sleep(nanoseconds: 10_000_000)
         updateState(.connected)
     }
 
@@ -83,7 +83,7 @@ public final class MockLoopbackSignalingClient: SignalingClientProtocol, @unchec
                     self.messageContinuation?.yield(.answer(answer))
 
                     // Emit simulated remote candidate
-                    try? await Task.sleep(nanoseconds: 150_000_000)
+                    try? await Task.sleep(nanoseconds: 20_000_000)
                     let candidate = IceCandidate(
                         sdp: "candidate:4234901 1 udp 2113937151 192.168.1.100 54123 typ host",
                         sdpMLineIndex: 0,
