@@ -47,3 +47,9 @@ Icon
 *.env
 *.env.local
 *.private.plist
+*.mobileprovision
+*.p12
+*.cer
+*.key
+signing-credentials.xcconfig
+local.xcconfig
