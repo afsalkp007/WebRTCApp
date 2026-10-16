@@ -1,5 +1,5 @@
 import XCTest
-@testable import WebRTCApp
+import WebRTCApp
 
 final class WebRTCClientTests: XCTestCase {
     func testSimulatedWebRTCClientOfferCreation() async throws {

@@ -1,6 +1,6 @@
 import XCTest
 import SwiftUI
-@testable import WebRTCApp
+import WebRTCApp
 
 @MainActor
 final class ViewSnapshotTests: XCTestCase {

@@ -1,5 +1,5 @@
 import XCTest
-@testable import WebRTCApp
+import WebRTCApp
 
 final class MockAudioSessionManager: AudioSessionManagerProtocol, @unchecked Sendable {
     var configureCalled = false
