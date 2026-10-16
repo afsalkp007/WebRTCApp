@@ -46,8 +46,10 @@ public final class CallViewModel {
     private var audioSessionManager: AudioSessionManagerProtocol
     private var callCoordinator: CallRepository?
 
-    private var eventListeningTask: Task<Void, Never>?
-    private var signalingListeningTask: Task<Void, Never>?
+    @ObservationIgnored
+    nonisolated(unsafe) private var eventListeningTask: Task<Void, Never>?
+    @ObservationIgnored
+    nonisolated(unsafe) private var signalingListeningTask: Task<Void, Never>?
 
     public init(
         webRTCClient: WebRTCClientProtocol = SimulatedWebRTCClient(),
