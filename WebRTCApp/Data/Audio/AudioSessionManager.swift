@@ -40,8 +40,12 @@ public final class AudioSessionManager: AudioSessionManagerProtocol, @unchecked 
                 mode: .videoChat,
                 options: [.allowBluetoothHFP, .allowBluetoothA2DP, .defaultToSpeaker]
             )
-            try session.setActive(true, options: .notifyOthersOnDeactivation)
             isConfigured = true
+
+            // Activate session on a background queue to prevent main-thread UI unresponsiveness
+            DispatchQueue.global(qos: .userInitiated).async {
+                try? session.setActive(true, options: .notifyOthersOnDeactivation)
+            }
             #endif
         }
     }
@@ -63,8 +67,12 @@ public final class AudioSessionManager: AudioSessionManagerProtocol, @unchecked 
         try lock.withLock {
             #if os(iOS)
             guard isConfigured else { return }
-            try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
             isConfigured = false
+
+            // Deactivate session on a background queue to avoid main-thread blocking
+            DispatchQueue.global(qos: .userInitiated).async {
+                try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+            }
             #endif
         }
     }

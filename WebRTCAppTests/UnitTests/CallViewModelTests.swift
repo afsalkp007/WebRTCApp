@@ -1,21 +1,46 @@
 import XCTest
 @testable import WebRTCApp
 
+final class MockAudioSessionManager: AudioSessionManagerProtocol, @unchecked Sendable {
+    var configureCalled = false
+    var deactivateCalled = false
+    var speakerphoneEnabled = true
+    var currentRoute: AudioOutputRoute = .speaker
+
+    func configureAudioSession() throws {
+        configureCalled = true
+    }
+
+    func setSpeakerphone(enabled: Bool) throws {
+        speakerphoneEnabled = enabled
+    }
+
+    func deactivateAudioSession() throws {
+        deactivateCalled = true
+    }
+}
+
 @MainActor
 final class CallViewModelTests: XCTestCase {
     private var viewModel: CallViewModel!
+    private var mockAudioSessionManager: MockAudioSessionManager!
 
     override func setUp() async throws {
         try await super.setUp()
+        mockAudioSessionManager = MockAudioSessionManager()
+        let webRTCClient = SimulatedWebRTCClient(audioSessionManager: mockAudioSessionManager)
+        let signalingClient = MockLoopbackSignalingClient(autoRespondToOffer: false)
+
         viewModel = CallViewModel(
-            webRTCClient: SimulatedWebRTCClient(),
-            signalingClient: MockLoopbackSignalingClient(autoRespondToOffer: false),
-            audioSessionManager: AudioSessionManager()
+            webRTCClient: webRTCClient,
+            signalingClient: signalingClient,
+            audioSessionManager: mockAudioSessionManager
         )
     }
 
     override func tearDown() async throws {
         viewModel = nil
+        mockAudioSessionManager = nil
         try await super.tearDown()
     }
 
