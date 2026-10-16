@@ -26,12 +26,11 @@ public struct ContentView: View {
         .preferredColorScheme(.dark)
 }
 
-#Preview("Landscape Orientation") {
+#Preview("Landscape Orientation", traits: .landscapeLeft) {
     let vm = CallViewModel()
     vm.callState = .connected(peerId: "Remote-Peer-Beta")
     vm.isDataChannelOpen = true
     return MainCallView(viewModel: vm)
-        .previewInterfaceOrientation(.landscapeLeft)
 }
 
 #Preview("Dynamic Type - Accessibility XXL") {

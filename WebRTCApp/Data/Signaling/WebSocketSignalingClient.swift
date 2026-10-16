@@ -9,9 +9,7 @@ public final class WebSocketSignalingClient: SignalingClientProtocol, @unchecked
 
     private var _state: SignalingTransportState = .disconnected
     public var state: SignalingTransportState {
-        lock.lock()
-        defer { lock.unlock() }
-        return _state
+        lock.withLock { _state }
     }
 
     private var stateContinuation: AsyncStream<SignalingTransportState>.Continuation?
@@ -138,9 +136,9 @@ public final class WebSocketSignalingClient: SignalingClientProtocol, @unchecked
     }
 
     private func updateState(_ newState: SignalingTransportState) {
-        lock.lock()
-        _state = newState
-        lock.unlock()
+        lock.withLock {
+            _state = newState
+        }
         stateContinuation?.yield(newState)
     }
 }

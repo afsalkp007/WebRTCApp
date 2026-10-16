@@ -52,13 +52,14 @@ public final class CallViewModel {
     nonisolated(unsafe) private var signalingListeningTask: Task<Void, Never>?
 
     public init(
-        webRTCClient: WebRTCClientProtocol = SimulatedWebRTCClient(),
-        signalingClient: SignalingClientProtocol = MockLoopbackSignalingClient(),
-        audioSessionManager: AudioSessionManagerProtocol = AudioSessionManager()
+        webRTCClient: WebRTCClientProtocol? = nil,
+        signalingClient: SignalingClientProtocol? = nil,
+        audioSessionManager: AudioSessionManagerProtocol? = nil
     ) {
-        self.webRTCClient = webRTCClient
-        self.signalingClient = signalingClient
-        self.audioSessionManager = audioSessionManager
+        let audioMgr = audioSessionManager ?? AudioSessionManager()
+        self.audioSessionManager = audioMgr
+        self.webRTCClient = webRTCClient ?? SimulatedWebRTCClient(audioSessionManager: audioMgr)
+        self.signalingClient = signalingClient ?? MockLoopbackSignalingClient()
     }
 
     deinit {

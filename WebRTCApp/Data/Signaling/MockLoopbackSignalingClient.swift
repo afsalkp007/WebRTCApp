@@ -6,9 +6,7 @@ public final class MockLoopbackSignalingClient: SignalingClientProtocol, @unchec
     private let lock = NSLock()
     private var _state: SignalingTransportState = .disconnected
     public var state: SignalingTransportState {
-        lock.lock()
-        defer { lock.unlock() }
-        return _state
+        lock.withLock { _state }
     }
 
     private var stateContinuation: AsyncStream<SignalingTransportState>.Continuation?
@@ -57,7 +55,7 @@ public final class MockLoopbackSignalingClient: SignalingClientProtocol, @unchec
         }
 
         switch message {
-        case .offer(let offerDescription):
+        case .offer:
             if autoRespondToOffer {
                 // Simulate remote peer receiving offer, generating answer and candidates
                 Task { [weak self] in
@@ -106,9 +104,9 @@ public final class MockLoopbackSignalingClient: SignalingClientProtocol, @unchec
     }
 
     private func updateState(_ newState: SignalingTransportState) {
-        lock.lock()
-        _state = newState
-        lock.unlock()
+        lock.withLock {
+            _state = newState
+        }
         stateContinuation?.yield(newState)
     }
 }

@@ -7,23 +7,17 @@ public final class SimulatedWebRTCClient: WebRTCClientProtocol, @unchecked Senda
 
     private var _peerConnectionState: PeerConnectionState = .new
     public var peerConnectionState: PeerConnectionState {
-        lock.lock()
-        defer { lock.unlock() }
-        return _peerConnectionState
+        lock.withLock { _peerConnectionState }
     }
 
     private var _iceConnectionState: IceConnectionState = .new
     public var iceConnectionState: IceConnectionState {
-        lock.lock()
-        defer { lock.unlock() }
-        return _iceConnectionState
+        lock.withLock { _iceConnectionState }
     }
 
     private var _mediaSettings = MediaSettings()
     public var mediaSettings: MediaSettings {
-        lock.lock()
-        defer { lock.unlock() }
-        return _mediaSettings
+        lock.withLock { _mediaSettings }
     }
 
     private var eventContinuation: AsyncStream<WebRTCClientEvent>.Continuation?
@@ -142,27 +136,27 @@ public final class SimulatedWebRTCClient: WebRTCClientProtocol, @unchecked Senda
     }
 
     public func setAudio(muted: Bool) async {
-        lock.lock()
-        _mediaSettings.isAudioMuted = muted
-        lock.unlock()
+        lock.withLock {
+            _mediaSettings.isAudioMuted = muted
+        }
     }
 
     public func setVideo(enabled: Bool) async {
-        lock.lock()
-        _mediaSettings.isVideoEnabled = enabled
-        lock.unlock()
+        lock.withLock {
+            _mediaSettings.isVideoEnabled = enabled
+        }
     }
 
     public func switchCamera() async {
-        lock.lock()
-        _mediaSettings.cameraPosition = _mediaSettings.cameraPosition.toggled
-        lock.unlock()
+        lock.withLock {
+            _mediaSettings.cameraPosition = _mediaSettings.cameraPosition.toggled
+        }
     }
 
     public func setSpeakerphone(enabled: Bool) async {
-        lock.lock()
-        _mediaSettings.isSpeakerphoneOn = enabled
-        lock.unlock()
+        lock.withLock {
+            _mediaSettings.isSpeakerphoneOn = enabled
+        }
         try? audioSessionManager?.setSpeakerphone(enabled: enabled)
     }
 
@@ -235,16 +229,16 @@ public final class SimulatedWebRTCClient: WebRTCClientProtocol, @unchecked Senda
     }
 
     private func updatePeerState(_ state: PeerConnectionState) {
-        lock.lock()
-        _peerConnectionState = state
-        lock.unlock()
+        lock.withLock {
+            _peerConnectionState = state
+        }
         emitEvent(.peerConnectionStateChanged(state))
     }
 
     private func updateIceState(_ state: IceConnectionState) {
-        lock.lock()
-        _iceConnectionState = state
-        lock.unlock()
+        lock.withLock {
+            _iceConnectionState = state
+        }
         emitEvent(.iceConnectionStateChanged(state))
     }
 

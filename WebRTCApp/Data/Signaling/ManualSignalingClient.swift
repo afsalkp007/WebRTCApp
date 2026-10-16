@@ -5,9 +5,7 @@ public final class ManualSignalingClient: SignalingClientProtocol, @unchecked Se
     private let lock = NSLock()
     private var _state: SignalingTransportState = .connected
     public var state: SignalingTransportState {
-        lock.lock()
-        defer { lock.unlock() }
-        return _state
+        lock.withLock { _state }
     }
 
     private var stateContinuation: AsyncStream<SignalingTransportState>.Continuation?

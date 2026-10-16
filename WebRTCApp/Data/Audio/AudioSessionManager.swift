@@ -9,67 +9,63 @@ public final class AudioSessionManager: AudioSessionManagerProtocol, @unchecked 
     public init() {}
 
     public var currentRoute: AudioOutputRoute {
-        lock.lock()
-        defer { lock.unlock() }
-
-        #if os(iOS)
-        let route = AVAudioSession.sharedInstance().currentRoute
-        for output in route.outputs {
-            switch output.portType {
-            case .builtInSpeaker:
-                return .speaker
-            case .builtInReceiver:
-                return .receiver
-            case .headphones, .headsetMic:
-                return .headphones
-            case .bluetoothA2DP, .bluetoothLE, .bluetoothHFP:
-                return .bluetooth
-            default:
-                break
+        lock.withLock {
+            #if os(iOS)
+            let route = AVAudioSession.sharedInstance().currentRoute
+            for output in route.outputs {
+                switch output.portType {
+                case .builtInSpeaker:
+                    return .speaker
+                case .builtInReceiver:
+                    return .receiver
+                case .headphones, .headsetMic:
+                    return .headphones
+                case .bluetoothA2DP, .bluetoothLE, .bluetoothHFP:
+                    return .bluetooth
+                default:
+                    break
+                }
             }
+            #endif
+            return .speaker
         }
-        #endif
-        return .speaker
     }
 
     public func configureAudioSession() throws {
-        lock.lock()
-        defer { lock.unlock() }
-
-        #if os(iOS)
-        let session = AVAudioSession.sharedInstance()
-        try session.setCategory(
-            .playAndRecord,
-            mode: .videoChat,
-            options: [.allowBluetooth, .allowBluetoothA2DP, .defaultToSpeaker]
-        )
-        try session.setActive(true, options: .notifyOthersOnDeactivation)
-        isConfigured = true
-        #endif
+        try lock.withLock {
+            #if os(iOS)
+            let session = AVAudioSession.sharedInstance()
+            try session.setCategory(
+                .playAndRecord,
+                mode: .videoChat,
+                options: [.allowBluetoothHFP, .allowBluetoothA2DP, .defaultToSpeaker]
+            )
+            try session.setActive(true, options: .notifyOthersOnDeactivation)
+            isConfigured = true
+            #endif
+        }
     }
 
     public func setSpeakerphone(enabled: Bool) throws {
-        lock.lock()
-        defer { lock.unlock() }
-
-        #if os(iOS)
-        let session = AVAudioSession.sharedInstance()
-        if enabled {
-            try session.overrideOutputAudioPort(.speaker)
-        } else {
-            try session.overrideOutputAudioPort(.none)
+        try lock.withLock {
+            #if os(iOS)
+            let session = AVAudioSession.sharedInstance()
+            if enabled {
+                try session.overrideOutputAudioPort(.speaker)
+            } else {
+                try session.overrideOutputAudioPort(.none)
+            }
+            #endif
         }
-        #endif
     }
 
     public func deactivateAudioSession() throws {
-        lock.lock()
-        defer { lock.unlock() }
-
-        #if os(iOS)
-        guard isConfigured else { return }
-        try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
-        isConfigured = false
-        #endif
+        try lock.withLock {
+            #if os(iOS)
+            guard isConfigured else { return }
+            try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+            isConfigured = false
+            #endif
+        }
     }
 }

@@ -27,23 +27,17 @@ public final class NativeWebRTCClient: WebRTCClientProtocol, @unchecked Sendable
 
     private var _peerConnectionState: PeerConnectionState = .new
     public var peerConnectionState: PeerConnectionState {
-        lock.lock()
-        defer { lock.unlock() }
-        return _peerConnectionState
+        lock.withLock { _peerConnectionState }
     }
 
     private var _iceConnectionState: IceConnectionState = .new
     public var iceConnectionState: IceConnectionState {
-        lock.lock()
-        defer { lock.unlock() }
-        return _iceConnectionState
+        lock.withLock { _iceConnectionState }
     }
 
     private var _mediaSettings = MediaSettings()
     public var mediaSettings: MediaSettings {
-        lock.lock()
-        defer { lock.unlock() }
-        return _mediaSettings
+        lock.withLock { _mediaSettings }
     }
 
     private var eventContinuation: AsyncStream<WebRTCClientEvent>.Continuation?
@@ -94,10 +88,10 @@ public final class NativeWebRTCClient: WebRTCClientProtocol, @unchecked Sendable
         // Native RTCSessionDescription setup
         #else
         // Mock state updates
-        lock.lock()
-        _peerConnectionState = .connected
-        _iceConnectionState = .connected
-        lock.unlock()
+        lock.withLock {
+            _peerConnectionState = .connected
+            _iceConnectionState = .connected
+        }
         eventContinuation?.yield(.peerConnectionStateChanged(.connected))
         eventContinuation?.yield(.iceConnectionStateChanged(.connected))
         eventContinuation?.yield(.dataChannelStateChanged(isOpen: true))
@@ -111,27 +105,27 @@ public final class NativeWebRTCClient: WebRTCClientProtocol, @unchecked Sendable
     }
 
     public func setAudio(muted: Bool) async {
-        lock.lock()
-        _mediaSettings.isAudioMuted = muted
-        lock.unlock()
+        lock.withLock {
+            _mediaSettings.isAudioMuted = muted
+        }
     }
 
     public func setVideo(enabled: Bool) async {
-        lock.lock()
-        _mediaSettings.isVideoEnabled = enabled
-        lock.unlock()
+        lock.withLock {
+            _mediaSettings.isVideoEnabled = enabled
+        }
     }
 
     public func switchCamera() async {
-        lock.lock()
-        _mediaSettings.cameraPosition = _mediaSettings.cameraPosition.toggled
-        lock.unlock()
+        lock.withLock {
+            _mediaSettings.cameraPosition = _mediaSettings.cameraPosition.toggled
+        }
     }
 
     public func setSpeakerphone(enabled: Bool) async {
-        lock.lock()
-        _mediaSettings.isSpeakerphoneOn = enabled
-        lock.unlock()
+        lock.withLock {
+            _mediaSettings.isSpeakerphoneOn = enabled
+        }
         try? audioSessionManager?.setSpeakerphone(enabled: enabled)
     }
 
@@ -140,10 +134,10 @@ public final class NativeWebRTCClient: WebRTCClientProtocol, @unchecked Sendable
     }
 
     public func close() async {
-        lock.lock()
-        _peerConnectionState = .closed
-        _iceConnectionState = .closed
-        lock.unlock()
+        lock.withLock {
+            _peerConnectionState = .closed
+            _iceConnectionState = .closed
+        }
         eventContinuation?.yield(.peerConnectionStateChanged(.closed))
         eventContinuation?.yield(.iceConnectionStateChanged(.closed))
         try? audioSessionManager?.deactivateAudioSession()
