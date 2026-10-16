@@ -2,11 +2,19 @@ import SwiftUI
 
 @main
 struct WebRTCApp: App {
-    @State private var viewModel = CallViewModel()
+    private var isRunningTests: Bool {
+        NSClassFromString("XCTestCase") != nil ||
+        ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil ||
+        ProcessInfo.processInfo.arguments.contains("-XCTest")
+    }
 
     var body: some Scene {
         WindowGroup {
-            MainCallView(viewModel: viewModel)
+            if isRunningTests {
+                Color.clear
+            } else {
+                ContentView()
+            }
         }
     }
 }
