@@ -57,8 +57,9 @@ final class CallViewModelTests: XCTestCase {
 
     func testStartCallTransitionsState() async {
         viewModel.startCall(asInitiator: true)
+        XCTAssertTrue(viewModel.callState.isCallActive)
 
-        // Initially moves to joining or connecting
+        try? await Task.sleep(nanoseconds: 100_000_000)
         XCTAssertTrue(viewModel.callState.isCallActive)
 
         viewModel.endCall()

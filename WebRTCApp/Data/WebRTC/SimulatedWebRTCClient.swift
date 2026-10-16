@@ -121,14 +121,14 @@ public final class SimulatedWebRTCClient: WebRTCClientProtocol, @unchecked Senda
         updatePeerState(.connecting)
         updateIceState(.checking)
 
-        Task { [weak self] in
-            try? await Task.sleep(nanoseconds: 300_000_000)
-            self?.updatePeerState(.connected)
-            self?.updateIceState(.connected)
-            self?.emitEvent(.signalingStateChanged(.stable))
-            self?.emitEvent(.dataChannelStateChanged(isOpen: true))
-            self?.startStatsReporting()
-        }
+        // Handshake settles
+        try? await Task.sleep(nanoseconds: 50_000_000)
+
+        updatePeerState(.connected)
+        updateIceState(.connected)
+        emitEvent(.signalingStateChanged(.stable))
+        emitEvent(.dataChannelStateChanged(isOpen: true))
+        startStatsReporting()
     }
 
     public func add(remoteCandidate: IceCandidate) async throws {

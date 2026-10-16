@@ -51,7 +51,7 @@ public enum CallState: Sendable, Equatable {
 
     public var isCallActive: Bool {
         switch self {
-        case .connected, .connecting, .ringing:
+        case .joining, .connected, .connecting, .ringing:
             return true
         default:
             return false
