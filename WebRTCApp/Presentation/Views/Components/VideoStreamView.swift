@@ -7,6 +7,7 @@ public struct VideoStreamView: View {
     public let isMuted: Bool
     public let isLocal: Bool
     public let cameraPosition: CameraPosition?
+    public let showHeaderBadges: Bool
 
     @ScaledMetric private var badgeIconSize: CGFloat = 14
     @ScaledMetric private var avatarSize: CGFloat = 72
@@ -16,13 +17,15 @@ public struct VideoStreamView: View {
         isVideoEnabled: Bool = true,
         isMuted: Bool = false,
         isLocal: Bool = false,
-        cameraPosition: CameraPosition? = nil
+        cameraPosition: CameraPosition? = nil,
+        showHeaderBadges: Bool = true
     ) {
         self.title = title
         self.isVideoEnabled = isVideoEnabled
         self.isMuted = isMuted
         self.isLocal = isLocal
         self.cameraPosition = cameraPosition
+        self.showHeaderBadges = showHeaderBadges
     }
 
     public var body: some View {
@@ -36,34 +39,29 @@ public struct VideoStreamView: View {
             }
 
             // Stream overlay metadata & badges
-            VStack {
-                HStack {
-                    StreamBadge(
-                        title: title,
-                        icon: isLocal ? "person.fill" : "person.2.fill"
-                    )
-
-                    if let cameraPosition, isLocal && isVideoEnabled {
+            if showHeaderBadges {
+                VStack {
+                    HStack(spacing: AppSpacing.xxSmall) {
                         StreamBadge(
-                            title: cameraPosition == .front ? "Front" : "Back",
-                            icon: "camera.rotate.fill"
+                            title: title,
+                            icon: isLocal ? "person.fill" : "person.2.fill"
                         )
+
+                        Spacer()
+
+                        if isMuted {
+                            Image(systemName: "mic.slash.fill")
+                                .font(.system(size: badgeIconSize, weight: .bold))
+                                .foregroundStyle(.white)
+                                .padding(AppSpacing.xxSmall + 2)
+                                .background(AppColors.hangupRed)
+                                .clipShape(Circle())
+                        }
                     }
+                    .padding(AppSpacing.xSmall)
 
                     Spacer()
-
-                    if isMuted {
-                        Image(systemName: "mic.slash.fill")
-                            .font(.system(size: badgeIconSize, weight: .bold))
-                            .foregroundStyle(.white)
-                            .padding(AppSpacing.xxSmall + 2)
-                            .background(AppColors.hangupRed)
-                            .clipShape(Circle())
-                    }
                 }
-                .padding(AppSpacing.small)
-
-                Spacer()
             }
         }
         .clipShape(RoundedRectangle(cornerRadius: AppSpacing.radiusMedium, style: .continuous))
@@ -151,6 +149,8 @@ private struct StreamBadge: View {
             Text(title)
                 .font(AppTypography.caption2)
                 .fontWeight(.medium)
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
         }
         .padding(.horizontal, AppSpacing.xSmall)
         .padding(.vertical, AppSpacing.xxSmall)

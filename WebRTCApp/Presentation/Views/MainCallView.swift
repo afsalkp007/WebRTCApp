@@ -118,15 +118,16 @@ private struct PortraitCallLayout: View {
                 title: "Remote Peer",
                 isVideoEnabled: viewModel.callState.isCallActive,
                 isMuted: false,
-                isLocal: false
+                isLocal: false,
+                showHeaderBadges: false
             )
             .ignoresSafeArea()
 
-            // Header Controls & Indicators
+            // Header Controls & Floating Bottom Dock
             VStack {
                 TopNavigationBar(viewModel: viewModel)
                     .padding(.horizontal, AppSpacing.medium)
-                    .padding(.top, AppSpacing.small)
+                    .padding(.top, AppSpacing.xSmall)
 
                 Spacer()
 
@@ -152,8 +153,11 @@ private struct PortraitCallLayout: View {
                     onOpenChat: { viewModel.isChatPresented = true },
                     onOpenStats: { viewModel.isStatsPresented = true }
                 )
-                .padding(.bottom, AppSpacing.medium)
+                .padding(.horizontal, AppSpacing.xSmall)
+                .padding(.bottom, AppSpacing.small)
             }
+            .safeAreaPadding(.top)
+            .safeAreaPadding(.bottom)
 
             // Draggable Picture-in-Picture Local Camera
             VStack {
@@ -166,7 +170,7 @@ private struct PortraitCallLayout: View {
                         isLocal: true,
                         cameraPosition: viewModel.mediaSettings.cameraPosition
                     )
-                    .frame(width: 120, height: 170)
+                    .frame(width: 110, height: 160)
                     .clipShape(RoundedRectangle(cornerRadius: AppSpacing.radiusMedium, style: .continuous))
                     .shadow(color: Color.black.opacity(0.3), radius: 8, y: 4)
                     .offset(
@@ -178,11 +182,12 @@ private struct PortraitCallLayout: View {
                             .onChanged(onDragChanged)
                             .onEnded(onDragEnded)
                     )
-                    .padding(.trailing, AppSpacing.medium)
-                    .padding(.top, 70)
+                    .padding(.trailing, AppSpacing.small)
+                    .padding(.top, 50)
                 }
                 Spacer()
             }
+            .safeAreaPadding(.top)
         }
     }
 }

@@ -17,9 +17,9 @@ public struct CallControlsBar: View {
     public let onOpenChat: () -> Void
     public let onOpenStats: () -> Void
 
-    @ScaledMetric private var buttonSize: CGFloat = 48
-    @ScaledMetric private var primaryButtonSize: CGFloat = 58
-    @ScaledMetric private var iconSize: CGFloat = 20
+    @ScaledMetric private var buttonSize: CGFloat = 40
+    @ScaledMetric private var primaryButtonSize: CGFloat = 50
+    @ScaledMetric private var iconSize: CGFloat = 18
 
     public init(
         isCallActive: Bool,
@@ -52,7 +52,35 @@ public struct CallControlsBar: View {
     }
 
     public var body: some View {
-        HStack(spacing: AppSpacing.small) {
+        ViewThatFits(in: .horizontal) {
+            controlsContent
+                .padding(.horizontal, AppSpacing.small)
+                .padding(.vertical, AppSpacing.xSmall)
+                .background(.ultraThinMaterial)
+                .clipShape(Capsule())
+                .overlay(
+                    Capsule()
+                        .stroke(Color.primary.opacity(0.12), lineWidth: 0.5)
+                )
+                .shadow(color: Color.black.opacity(0.15), radius: 12, y: 6)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                controlsContent
+                    .padding(.horizontal, AppSpacing.small)
+                    .padding(.vertical, AppSpacing.xSmall)
+            }
+            .background(.ultraThinMaterial)
+            .clipShape(Capsule())
+            .overlay(
+                Capsule()
+                    .stroke(Color.primary.opacity(0.12), lineWidth: 0.5)
+            )
+            .shadow(color: Color.black.opacity(0.15), radius: 12, y: 6)
+        }
+    }
+
+    private var controlsContent: some View {
+        HStack(spacing: 6) {
             // Audio Mute Button
             ControlButton(
                 icon: isAudioMuted ? "mic.slash.fill" : "mic.fill",
@@ -141,15 +169,6 @@ public struct CallControlsBar: View {
             .buttonStyle(.plain)
             .accessibilityLabel(isCallActive ? "End Call" : "Start Call")
         }
-        .padding(.horizontal, AppSpacing.medium)
-        .padding(.vertical, AppSpacing.small)
-        .background(.ultraThinMaterial)
-        .clipShape(Capsule())
-        .overlay(
-            Capsule()
-                .stroke(Color.primary.opacity(0.12), lineWidth: 0.5)
-        )
-        .shadow(color: Color.black.opacity(0.15), radius: 12, y: 6)
     }
 }
 
