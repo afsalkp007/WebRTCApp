@@ -1,9 +1,12 @@
 import SwiftUI
 
-@main struct MyApp: App {
+@main
+struct WebRTCApp: App {
+    @State private var viewModel = CallViewModel()
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainCallView(viewModel: viewModel)
         }
     }
 }
