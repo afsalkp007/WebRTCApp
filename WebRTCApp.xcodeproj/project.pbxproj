@@ -6,6 +6,10 @@
 	objectVersion = 90;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		5E0405A72DA0CFF300C3B314 /* WebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 5E0405A62DA0CFF300C3B313 /* WebRTC */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		000000000000000260000000 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -38,6 +42,7 @@
 		000000000000000130000000 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				5E0405A72DA0CFF300C3B314 /* WebRTC in Frameworks */,
 			);
 		};
 		000000000000000230000000 /* Frameworks */ = {
@@ -83,6 +88,9 @@
 				000000000000000000000010 /* WebRTCApp */,
 			);
 			name = WebRTCApp;
+			packageProductDependencies = (
+				5E0405A62DA0CFF300C3B313 /* WebRTC */,
+			);
 			productName = MyApp;
 			productReference = 000000000000000000000120 /* WebRTCApp.app */;
 			productType = "com.apple.product-type.application";
@@ -140,6 +148,9 @@
 			productRefGroup = 000000000000000000000020 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
+			packageReferences = (
+				5E0405A52DA0CFF300C3B312 /* XCRemoteSwiftPackageReference "WebRTC" */,
+			);
 			targets = (
 				000000000000000100000000 /* WebRTCApp */,
 				000000000000000200000000 /* WebRTCAppTests */,
@@ -472,6 +483,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5E0405A52DA0CFF300C3B312 /* XCRemoteSwiftPackageReference "WebRTC" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/stasel/WebRTC.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 132.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5E0405A62DA0CFF300C3B313 /* WebRTC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5E0405A52DA0CFF300C3B312 /* XCRemoteSwiftPackageReference "WebRTC" */;
+			productName = WebRTC;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 000000000000000000000000 /* Project object */;
 }
