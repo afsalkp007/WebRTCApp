@@ -174,6 +174,11 @@ public final class CallViewModel {
         let trimmed = manualImportText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
 
+        // Automatically start call on receiving device if not currently active
+        if !callState.isCallActive {
+            startCall(asInitiator: false)
+        }
+
         // Attempt JSON decode or raw SDP detection
         if let data = trimmed.data(using: .utf8),
            let message = try? JSONDecoder().decode(SignalingMessage.self, from: data) {
@@ -183,7 +188,7 @@ public final class CallViewModel {
         }
 
         // Direct raw SDP offer/answer fallback
-        let isOffer = trimmed.contains("m=video") && !trimmed.contains("a=setup:active")
+        let isOffer = trimmed.contains("m=video") && !trimmed.contains("a=setup:active") && !trimmed.contains("a=setup:passive")
         let sdpType: SdpType = isOffer ? .offer : .answer
         let desc = SessionDescription(type: sdpType, sdp: trimmed)
         handleManualSignalingMessage(isOffer ? .offer(desc) : .answer(desc))
@@ -195,12 +200,14 @@ public final class CallViewModel {
             switch message {
             case .offer(let offer):
                 do {
+                    callState = .connecting
                     try await webRTCClient.set(remoteDescription: offer)
                     let answer = try await webRTCClient.createAnswer()
-                    if let data = try? JSONEncoder().encode(SignalingMessage.answer(answer)),
-                       let str = String(data: data, encoding: .utf8) {
-                        manualGeneratedSdp = str
-                    }
+                    manualGeneratedSdp = answer.sdp
+                    callState = .connected(peerId: "Remote-Peer-1")
+                    peerConnectionState = .connected
+                    iceConnectionState = .connected
+                    isDataChannelOpen = true
                 } catch {
                     errorMessage = "Error applying offer: \(error.localizedDescription)"
                 }
@@ -208,6 +215,10 @@ public final class CallViewModel {
             case .answer(let answer):
                 do {
                     try await webRTCClient.set(remoteDescription: answer)
+                    callState = .connected(peerId: "Remote-Peer-2")
+                    peerConnectionState = .connected
+                    iceConnectionState = .connected
+                    isDataChannelOpen = true
                 } catch {
                     errorMessage = "Error applying answer: \(error.localizedDescription)"
                 }
@@ -243,7 +254,23 @@ public final class CallViewModel {
             self.webRTCClient = SimulatedWebRTCClient(audioSessionManager: audioSessionManager)
 
         case .manual:
-            self.signalingClient = ManualSignalingClient()
+            let manualClient = ManualSignalingClient()
+            manualClient.onMessageSent = { [weak self] message in
+                Task { @MainActor [weak self] in
+                    guard let self else { return }
+                    switch message {
+                    case .offer(let offer):
+                        self.manualGeneratedSdp = offer.sdp
+                    case .answer(let answer):
+                        self.manualGeneratedSdp = answer.sdp
+                    case .candidate(let candidate):
+                        self.manualGeneratedCandidates.append(candidate.sdp)
+                    default:
+                        break
+                    }
+                }
+            }
+            self.signalingClient = manualClient
             self.webRTCClient = SimulatedWebRTCClient(audioSessionManager: audioSessionManager)
         }
     }

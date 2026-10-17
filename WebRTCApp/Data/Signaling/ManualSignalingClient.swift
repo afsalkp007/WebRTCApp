@@ -14,6 +14,8 @@ public final class ManualSignalingClient: SignalingClientProtocol, @unchecked Se
     private var messageContinuation: AsyncStream<SignalingMessage>.Continuation?
     public let messageStream: AsyncStream<SignalingMessage>
 
+    public var onMessageSent: (@Sendable (SignalingMessage) -> Void)?
+
     public init() {
         var sContinuation: AsyncStream<SignalingTransportState>.Continuation?
         self.stateStream = AsyncStream { continuation in
@@ -39,7 +41,7 @@ public final class ManualSignalingClient: SignalingClientProtocol, @unchecked Se
     }
 
     public func send(message: SignalingMessage) async throws {
-        // Dispatched to external observer/UI
+        onMessageSent?(message)
     }
 
     /// Injects manually pasted or scanned signaling message into the stream.
